@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auto Fish</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="steps">
+    <span class="step active" data-step="1">1 · Файлы</span>
+    <span class="sep">→</span>
+    <span class="step" data-step="2">2 · Проверка</span>
+  </div>
+
+  <main>
+    <!-- ============ ШАГ 1 ============ -->
+    <section id="step1" class="step-view">
+      <div id="dropzone">
+        <div class="pick">
+          <button class="btn" id="pick-docx">Транскрипт .docx</button>
+          <span class="path" id="path-docx">не выбран</span>
+        </div>
+        <div class="pick">
+          <button class="btn" id="pick-json">Слова .json</button>
+          <span class="path" id="path-json">не выбран</span>
+        </div>
+        <p class="dz-hint">или перетащи оба файла сюда</p>
+      </div>
+
+      <input type="file" id="file-docx" accept=".docx" hidden />
+      <input type="file" id="file-json" accept=".json" hidden />
+
+      <p id="seq-line" class="muted"></p>
+      <div id="status" class="status"></div>
+      <button class="btn primary big" id="btn-parse" disabled>Разобрать</button>
+    </section>
+
+    <!-- ============ ШАГ 2 ============ -->
+    <section id="step2" class="step-view" hidden>
+      <button class="btn ghost" id="btn-back">‹ Назад</button>
+
+      <div class="acc" data-key="flagged">
+        <button class="acc-head"><span class="ac-title">⚠ Не вырезано — проверь</span><b class="ac-cnt">0</b></button>
+        <div class="acc-body" hidden>
+          <p class="acc-desc">Куски, помеченные на удаление, но программа не смогла точно определить их границы по словам. НЕ вырезаны — стоит маркер, поправь вручную.</p>
+          <label class="bulk"><input type="checkbox" id="bulk-flagged" checked /> ставить все маркеры</label>
+          <div class="rows" id="rows-flagged"></div>
+        </div>
+      </div>
+
+      <div class="acc" data-key="notes">
+        <button class="acc-head"><span class="ac-title">✍ Комментарии редактора</span><b class="ac-cnt">0</b></button>
+        <div class="acc-body" hidden>
+          <p class="acc-desc">Отдельные заметки, которые редактор вписал между репликами в доке. Ставятся маркерами на таймлайн.</p>
+          <label class="bulk"><input type="checkbox" id="bulk-notes" checked /> ставить все маркеры</label>
+          <div class="rows" id="rows-notes"></div>
+        </div>
+      </div>
+
+      <div class="acc" data-key="ann">
+        <button class="acc-head"><span class="ac-title">Прочее</span><b class="ac-cnt">0</b></button>
+        <div class="acc-body" hidden>
+          <p class="acc-desc">Слова ЗАГЛАВНЫМИ внутри реплик (СК, МОНТАЖ и т.п.). Ставятся маркерами. По умолчанию выключено.</p>
+          <label class="bulk"><input type="checkbox" id="bulk-ann" /> ставить все маркеры</label>
+          <div class="rows" id="rows-ann"></div>
+        </div>
+      </div>
+
+      <div class="acc" data-key="stats">
+        <button class="acc-head"><span class="ac-title">Статистика</span></button>
+        <div class="acc-body" hidden>
+          <table class="kv"><tbody id="stats-rows"></tbody></table>
+        </div>
+      </div>
+
+      <div id="status2" class="status"></div>
+      <button class="btn primary big" id="btn-cut">Порезать секвенцию</button>
+    </section>
+  </main>
+
+  <script src="./CSInterface.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

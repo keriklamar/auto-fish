@@ -1,0 +1,14 @@
+{
+  "name": "auto-fish",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Auto Fish — CEP-панель для Premiere Pro: авторезка секвенции по красной разметке транскрипта в .docx",
+  "license": "MIT",
+  "scripts": {
+    "test": "node spike/all.js"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1",
+    "fast-xml-parser": "^4.5.0"
+  }
+}

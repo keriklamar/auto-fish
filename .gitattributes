@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.jsx text eol=lf
+*.docx binary
+*.png binary
+*.jpg binary
+
+# вендоренные зависимости — не трогаем переносы строк
+node_modules/** -text
