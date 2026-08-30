@@ -1,5 +1,7 @@
 * text=auto eol=lf
 *.bat text eol=crlf
+*.iss text eol=crlf
+installer/after_install.txt text eol=crlf
 *.jsx text eol=lf
 *.docx binary
 *.png binary
@@ -7,3 +9,7 @@
 
 # вендоренные зависимости — не трогаем переносы строк
 node_modules/** -text
+
+# не попадает в дистрибутив панели (git archive для installer/build.bat)
+/spike export-ignore
+/installer export-ignore

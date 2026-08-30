@@ -1,0 +1,9 @@
+﻿Auto Fish установлен.
+
+Дальше:
+  1. Запусти Adobe Premiere Pro (если был открыт — полностью закрой и открой заново).
+  2. Меню  Window  →  Extensions  →  Auto Fish
+
+Удаление — через "Установка и удаление программ" (пункт "Auto Fish").
+
+Инструкция и помощь: https://github.com/keriklamar/auto-fish

@@ -4,6 +4,10 @@
 # рантайм-папка, которую панель пишет перед резкой
 /run/
 
+# сборка установщика
+/installer/staging/
+/installer/dist/
+
 # кеши / логи
 *.log
 node_modules/.cache/

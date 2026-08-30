@@ -12,18 +12,30 @@
 
 ---
 
-## Установка (в т.ч. на чистом компьютере)
+## Установка
 
-1. Скачать/распаковать эту папку целиком.
-2. **Закрыть Premiere Pro.**
-3. Запустить `install.bat` двойным кликом.
-4. Открыть Premiere → меню **Window → Extensions → Auto Fish**.
+Нужен только установленный **Adobe Premiere Pro** (2019+). Ни Python, ни Node.js,
+ни прав администратора.
 
-`install.bat` копирует панель в `%APPDATA%\Adobe\CEP\extensions\auto_fish` и включает
-`PlayerDebugMode` в реестре текущего пользователя (это разрешает Premiere грузить
-неподписанное расширение). Удаление — `uninstall.bat`.
+### Просто (рекомендуется)
 
-Обновление версии — просто запустить `install.bat` заново.
+1. Скачать **`AutoFishSetup.exe`** со страницы
+   [**Releases**](https://github.com/keriklamar/auto-fish/releases).
+2. Закрыть Premiere Pro, запустить `AutoFishSetup.exe`, нажать «Далее».
+3. Открыть Premiere → меню **Window → Extensions → Auto Fish**.
+
+Удаление — через «Установка и удаление программ» → «Auto Fish».
+Обновление — просто запустить новый `AutoFishSetup.exe`.
+
+### Вручную (без установщика)
+
+1. Скачать/распаковать репозиторий целиком (в архиве уже всё нужное).
+2. Закрыть Premiere Pro, запустить `install.bat`.
+3. Premiere → **Window → Extensions → Auto Fish**. Удаление — `uninstall.bat`.
+
+Оба способа кладут панель в `%APPDATA%\Adobe\CEP\extensions\auto_fish` и включают
+`PlayerDebugMode` в реестре текущего пользователя (разрешает Premiere грузить
+неподписанное расширение).
 
 ---
 
@@ -121,6 +133,9 @@
 - Проверки: `npm test` (`node spike/all.js`) — сверка ядра с зафиксированным
   эталоном на анонимизированной фикстуре `spike/fixtures/sample.*`.
 - Ядро изначально было портом Python-приложения и сверено с ним байт-в-байт.
+- Сборка установщика: `installer/build.bat` (нужен Inno Setup 6) →
+  `installer/dist/AutoFishSetup.exe`. Кладёт в архив только то, что реально едет
+  в панель (`git archive` + `export-ignore` в `.gitattributes`).
 
 ## Лицензия
 
