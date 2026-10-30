@@ -5,11 +5,15 @@
 const { SequenceMatcher } = require("./difflib");
 const { snapToFrame, secToTc } = require("./timecode");
 const { isMarker, norm, blockFullText } = require("./parseDocx");
+const { buildPieces, buildRuns, cutsToReordered } = require("./reorder");
+const { runsAfterCuts } = require("./markers");
+const { alignBlocks } = require("./align");
 
 const DEFAULTS = {
   fps: 25,
   gapMergeFrames: 5,
   matchWindowMargin: 3.0,
+  // выравнивание сценария по транскрипту (см. align.js): alignTimecodes, minTranscriptHit и др.
 };
 
 // ---- 3. заметки внутри блока (ЗАГЛАВНЫЕ слова) ----
@@ -143,8 +147,12 @@ function mergeCloseCuts(cuts, gapMergeSec) {
 
 function runParse(docxResult, jsonWords, opts = {}) {
   const cfg = { ...DEFAULTS, ...opts };
-  const blocks = docxResult.blocks;
-  const standaloneNotes = docxResult.notes;
+  // Привязка сценария к транскрипту секвенции по тексту: время в секвенции может отличаться от TC сценария
+  // (например, в секвенцию собрана часть сценария). Блоки, которых в секвенции нет (подводки, чужие семьи), отбрасываются.
+  const al = alignBlocks(docxResult, jsonWords, cfg);
+  const blocks = al.blocks;
+  const skippedBlocks = al.skipped;
+  const standaloneNotes = al.notes;
 
   const cuts = [];
   const flagged = [];
@@ -158,7 +166,10 @@ function runParse(docxResult, jsonWords, opts = {}) {
     for (const a of findAnnotations(b)) annotations.push(a);
   }
 
-  for (const b of blocks) {
+  const blockCuts = blocks.map(() => []);
+
+  for (let bi = 0; bi < blocks.length; bi++) {
+    const b = blocks[bi];
     const cleanWords = b.words.filter((w) => !isMarker(w[0]));
     if (cleanWords.length === 0) continue;
     const allRed = cleanWords.every((w) => w[1]);
@@ -166,12 +177,14 @@ function runParse(docxResult, jsonWords, opts = {}) {
 
     if (allRed) {
       cuts.push([b.start, b.end]);
+      blockCuts[bi].push([b.start, b.end]);
       nFull++;
     } else if (anyRed) {
       const results = resolvePartialBlock(b, jsonWords, cfg.matchWindowMargin);
       for (const r of results) {
         if (r.cut !== null) {
           cuts.push(r.cut);
+          blockCuts[bi].push(r.cut);
           nPartialOk++;
         } else {
           nPartialFail++;
@@ -197,11 +210,34 @@ function runParse(docxResult, jsonWords, opts = {}) {
     snapToFrame(e, cfg.fps),
   ]);
   merged = mergeCloseCuts(merged, gapMergeSec);
+  // при выравнивании по тексту вырез не должен выходить за пределы секвенции (конец транскрипта)
+  if (al.info.mode === "aligned" && jsonWords.length) {
+    const seqEnd = snapToFrame(jsonWords[jsonWords.length - 1].end, cfg.fps);
+    merged = merged
+      .map(([s, e]) => [Math.max(0, s), Math.min(e, seqEnd)])
+      .filter(([s, e]) => e - s > 1e-6);
+  }
+
+  // порядок дока -> куски итогового таймлайна (см. reorder.js)
+  const gapMergeSecBlock = gapMergeSec;
+  const perBlock = blockCuts.map((list) =>
+    mergeCloseCuts(
+      list.map(([s, e]) => [snapToFrame(s, cfg.fps), snapToFrame(e, cfg.fps)]),
+      gapMergeSecBlock
+    )
+  );
+  const order = buildPieces(blocks, perBlock, { fps: cfg.fps, totalDur: cfg.totalDur, gapMergeSec });
+
+  const runInfo = buildRuns(blocks, { fps: cfg.fps, totalDur: cfg.totalDur });
+  const runsPost = runsAfterCuts(runInfo.runs, merged);
+  let runJumps = 0;
+  for (let i = 1; i < runInfo.runs.length; i++) if (runInfo.runs[i][0] < runInfo.runs[i - 1][0] - 1e-6) runJumps++;
 
   const totalDur = merged.reduce((acc, [s, e]) => acc + (e - s), 0);
 
   const stats = {
     n_blocks: blocks.length,
+    n_skipped_blocks: skippedBlocks.length,
     n_full_red: nFull,
     n_partial_matched: nPartialOk,
     n_partial_failed: nPartialFail,
@@ -215,6 +251,17 @@ function runParse(docxResult, jsonWords, opts = {}) {
 
   return {
     cuts: merged,
+    skipped_blocks: skippedBlocks,
+    alignment: al.info,
+    runs: runInfo.runs,
+    cuts_reordered: cutsToReordered(merged, runInfo.runs),
+    runs_post: runsPost,
+    run_jumps: runJumps,
+    run_duplicates_dropped: runInfo.droppedDuplicates,
+    pieces: order.pieces,
+    reordered: order.reordered,
+    reorder_jumps: order.jumps,
+    reorder_warnings: order.warnings,
     flagged,
     annotations,
     standalone_notes: standaloneNotes,

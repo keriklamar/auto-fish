@@ -33,6 +33,50 @@
       <p id="seq-line" class="muted"></p>
       <div id="status" class="status"></div>
       <button class="btn primary big" id="btn-parse" disabled>Разобрать</button>
+
+      <p class="dz-hint" style="margin-top:16px">или</p>
+      <button class="btn big" id="btn-goto-peaks">🎙 Резать по звуку (по пикам громкости дорожки)</button>
+    </section>
+
+    <!-- ============ РЕЗКА ПО ЗВУКУ ============ -->
+    <section id="step3" class="step-view" hidden>
+      <button class="btn ghost" id="btn-back3">‹ Назад</button>
+
+      <p class="acc-desc">
+        Берёт выбранную аудиодорожку (например, микрофон режиссёра), показывает её громкость графиком
+        и режет всё, что ГРОМЧЕ линии порога, — без сценария и транскрипта, по самому звуку.
+      </p>
+
+      <label class="pick" style="gap:8px">
+        Номер аудиодорожки:
+        <input type="number" id="peak-track" value="4" min="1" max="99" style="width:60px" />
+      </label>
+
+      <button class="btn primary big" id="btn-peak-find">Найти пики</button>
+      <div id="status3" class="status"></div>
+
+      <div id="peak-threshold-block" hidden>
+        <p class="dz-hint">Тащи линию мышкой по графику вверх-вниз или впиши число: всё, что ГРОМЧЕ линии, будет вырезано по всей секвенции.</p>
+        <canvas id="peak-waveform" height="140"></canvas>
+        <label class="pick" style="gap:8px">
+          Порог громкости (можно просто «35», минус подставим сами):
+          <input type="number" id="peak-threshold" step="1" style="width:70px" />
+          дБ
+        </label>
+        <label class="pick" style="gap:8px">
+          Искать соседний пик влево/вперёд в пределах, сек (нашли рядом — вся пауза между ними тоже удаляется; не нашли — тишину не трогаем):
+          <input type="number" id="peak-leftpad" step="0.1" min="0" style="width:60px" />
+        </label>
+        <p class="dz-hint">Вправо автоматически добавляется небольшой фиксированный хвост (~⅓ с).</p>
+        <p id="peak-stats" class="muted"></p>
+      </div>
+
+      <div id="peak-summary" class="muted" hidden></div>
+      <div class="rows" id="rows-peaks"></div>
+
+      <label class="bulk" id="peak-backup-row" hidden><input type="checkbox" id="chk-backup3" /> Сделать резервную копию проекта (в папку проекта)</label>
+      <button class="btn primary big" id="btn-peak-cut" hidden>Порезать по пикам</button>
+      <button class="btn big" id="btn-stop3" hidden>Остановить</button>
     </section>
 
     <!-- ============ ШАГ 2 ============ -->
@@ -73,8 +117,17 @@
         </div>
       </div>
 
+      <div id="reorder-box" class="reorder-box" hidden>
+        <b id="reorder-label">Блоки в доке стоят в другом порядке</b>
+        <p class="acc-desc" id="reorder-desc"></p>
+      </div>
+      <label class="bulk"><input type="checkbox" id="chk-inplace" checked /> Резать на месте (основной способ, как раньше). Снять галочку — экспериментальная сборка НОВОЙ секвенции через XML: не работает, если в проекте есть вложенные секвенции и мультикам</label>
+      <label class="bulk"><input type="checkbox" id="chk-backup" /> Сделать резервную копию проекта (в папку проекта)</label>
+
       <div id="status2" class="status"></div>
       <button class="btn primary big" id="btn-cut">Порезать секвенцию</button>
+      <button class="btn big" id="btn-reorder" disabled>Поменять местами (по порядку дока)</button>
+      <button class="btn big" id="btn-stop" hidden>Остановить</button>
     </section>
   </main>
 

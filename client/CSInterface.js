@@ -35,3 +35,18 @@ CSInterface.prototype.getSeqInfo = function (callback) {
     callback(info);
   });
 };
+
+// {hasTrack, clips:[{start,end,inPoint,mediaPath}], error?} для аудиодорожки
+// trackIndex (1-based, как в интерфейсе Premiere — A6 = 6).
+CSInterface.prototype.getTrackClips = function (trackIndex, callback) {
+  this.evalScript("afTrackClips(" + trackIndex + ")", function (res) {
+    var info = { hasTrack: false, clips: [] };
+    try {
+      var o = JSON.parse(res);
+      if (o && typeof o === "object") info = Object.assign(info, o);
+    } catch (e) {
+      info.error = "Не удалось разобрать ответ Premiere: " + res;
+    }
+    callback(info);
+  });
+};

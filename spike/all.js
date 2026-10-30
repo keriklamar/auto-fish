@@ -12,7 +12,17 @@ const jobs = [
   ["parseDocxSpike.js", [docx, path.join(FIX, "ref_parseDocx.json")]],
   ["parseSpike.js", [docx, json, path.join(FIX, "ref_runParse.json")]],
   ["markersSpike.js", []],
+  ["reorderSpike.js", []],
+  ["xmlSpike.js", []],
+  ["alignSpike.js", []],
+  ["peakSpike.js", []],
 ];
+
+// локальные проверки на реальных файлах (spike/local/, в Git не входит)
+try {
+  const lf = require("path").join(HERE, "local");
+  for (const f of require("fs").readdirSync(lf)) if (/.js$/.test(f)) jobs.push([require("path").join("local", f), []]);
+} catch (e) {}
 
 let failed = 0;
 for (const [script, args] of jobs) {
