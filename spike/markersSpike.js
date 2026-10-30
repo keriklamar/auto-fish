@@ -29,7 +29,7 @@ console.log("синтетика: OK");
   const dir = path.join(__dirname, "fixtures");
   const dr = await parseDocxFile(path.join(dir, "sample.docx"), 25);
   const words = loadTranscriptFile(path.join(dir, "sample.json"));
-  const res = runParse(dr, words, { fps: 25 });
+  const res = runParse(dr, words, { fps: 25, minTranscriptHit: 0, alignTimecodes: false });
 
   const totalCut = res.cuts.reduce((a, [s, e]) => a + (e - s), 0);
   const seqEnd = res.cuts[res.cuts.length - 1][1];

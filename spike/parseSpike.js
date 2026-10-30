@@ -38,7 +38,8 @@ function cmpArr(name, a, b, fmt) {
 (async () => {
   const docxResult = await parseDocxFile(docxPath, 25);
   const jsonWords = loadTranscriptFile(jsonPath);
-  const res = runParse(docxResult, jsonWords);
+  const res = runParse(docxResult, jsonWords, { minTranscriptHit: 0, alignTimecodes: false });
+  delete res.stats.n_skipped_blocks; // добавочное поле: в эталоне его нет
   const ref = JSON.parse(fs.readFileSync(refPath, "utf-8"));
 
   console.log("STATS JS:", JSON.stringify(res.stats));

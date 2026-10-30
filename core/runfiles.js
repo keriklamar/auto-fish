@@ -21,12 +21,17 @@ function toJsxSafeJson(value) {
 
 // runDir — папка (обычно <extension>/run). Перезаписывается каждый раз,
 // никаких «магических» путей в %LOCALAPPDATA%.
-function writeRunFiles(runDir, { cuts, flagged, notes, ann }) {
+function writeRunFiles(runDir, { cuts, runs, flagged, notes, ann }) {
   fs.mkdirSync(runDir, { recursive: true });
   fs.writeFileSync(
     path.join(runDir, "af_cuts.json"),
     toJsxSafeJson(cuts.map((c) => [round3(c[0]), round3(c[1])]))
   );
+  fs.writeFileSync(
+    path.join(runDir, "af_runs.json"),
+    toJsxSafeJson((runs || []).map((c) => [round3(c[0]), round3(c[1])]))
+  );
+  fs.writeFileSync(path.join(runDir, "af_progress.txt"), "0");
   fs.writeFileSync(path.join(runDir, "af_flagged.json"), toJsxSafeJson(flagged));
   fs.writeFileSync(path.join(runDir, "af_annotations.json"), toJsxSafeJson(ann));
   fs.writeFileSync(path.join(runDir, "af_notes.json"), toJsxSafeJson(notes));

@@ -158,3 +158,18 @@ main { flex: 1 1 auto; overflow-y: auto; padding: 12px; }
 }
 .row .marker:focus { outline: none; border-color: var(--accent); }
 .row .sub { grid-column: 2 / 4; color: var(--dim); font-size: 10px; line-height: 1.35; margin-top: 3px; white-space: pre-wrap; }
+
+.reorder-box { margin: 8px 0; padding: 8px 10px; border: 1px solid #555; border-radius: 4px; }
+.reorder-box .acc-desc { margin: 4px 0 0; }
+
+/* ---- waveform / порог громкости ---- */
+#peak-waveform {
+  display: block;
+  width: 100%;
+  height: 140px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #1c1c1c;
+  cursor: ns-resize;
+  touch-action: none;
+}
